@@ -20,4 +20,4 @@ public class BinaryTree {
 	public int getHeight (BinaryTree tree){
 		// return height of tree
 	}
-}
+} 
