@@ -17,6 +17,9 @@ public class Container {
 
 	private int minSpan = 5;
 	private int buffer = 3;
+	private float W_RATIO = .3;
+	private float H_RATIO = .3;
+	private bool ENFORCE_RATIO = true;
 
 	public Container(int x, int y, int w, int h){
 		this.x = x;
@@ -52,6 +55,12 @@ public class Container {
 			                   cont.y,
 			                   cont.w - r1.w,
 			                   cont.h);
+			if (ENFORCE_RATIO){
+				float r1_rat = r1.w/r1.h;
+				float r2_rat = r2.w/r2.h;
+				if (r1_rat < W_RATIO || r2_rat < W_RATIO)
+					return randomSplit(cont);
+			}
 		} else {
 			// Horizontal split
 			r1 = new Container(cont.x, 
@@ -62,6 +71,12 @@ public class Container {
 			                   cont.y,
 			                   cont.w,
 			                   cont.h - r1.h);
+			if (ENFORCE_RATIO){
+				float r1_rat = r1.h/r1.w;
+				float r2_rat = r2.h/r2.w;
+				if (r1_rat < H_RATIO || r2_rat < H_RATIO)
+					return randomSplit(cont);
+			}
 		}
 		Continer [] ret = {r1, r2};
 		return ret;
