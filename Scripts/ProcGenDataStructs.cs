@@ -21,13 +21,13 @@ public class Room {
 	}
 
 	// Draws the given room into a bitmap
-	public void drawRoom(out Texture2D bmp){
-		if (x + width > bmp.width || y + height > bmp.height){
+	public void drawRoom(ref int[,] bmp){
+		if (x + width > bmp.GetLength(0) || y + height > bmp.GetLength(1)){
 			Debug.Log("Something went wrong with your room drawing");
 		} else {
-			for (int i = 0; i <= width; i++){
-				for (int j = 0; j <= height; j++){
-					bmp.SetPixel(x + i, y + j, Color.black);
+			for (int i = 0; i < width; i++){
+				for (int j = 0; j < height; j++){
+					bmp [x + i,y + j] = 1;
 				}
 			}
 		}
@@ -39,11 +39,8 @@ public class MazeContainer {
 	private int y;
 	private int w;
 	private int h;
-	private Vector2 centre;
-//	private MazeContainer parent = null;
-//
-//	private int minSpan = 5;
-//	private int buffer = 3;
+//	private Vector2 centre;
+
 	private float W_RATIO = .3f;
 	private float H_RATIO = .3f;
 	private bool ENFORCE_RATIO = true;
@@ -54,8 +51,8 @@ public class MazeContainer {
 		this.y = y;
 		this.h = h;
 		this.w = w;
-		this.centre = new Vector2(this.x + this.w/2, 
-		                      this.y + this.h/2);
+//		this.centre = new Vector2(this.x + this.w/2, 
+//		                      this.y + this.h/2);
 	}
 	
 	public MazeContainer split(MazeContainer toSplit, int iter){
@@ -144,6 +141,10 @@ public class BinaryTree {
 			getLeaves(root.left);
 			getLeaves(root.right);
 		}
+	}
+
+	public List<MazeContainer> getAllNodes(){
+		return allNodes;
 	}
 	
 	public MazeContainer getNode(){
