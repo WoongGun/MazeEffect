@@ -7,14 +7,18 @@ public class EnemyMovement : MonoBehaviour
 	public float moveSpeed;
 	public float chaseDistance;
 	public float yHeight;
-	public float threatDistance;
-	public Animator anim; 
+	public float threatDistance; 
 	public float attackSpeed;
+	public int walkMultiplier;
 
 	private Transform player;               // Reference to the player's position.
 	private float mostFear = 0.0f;
 	private Collider mostFeared;  
 	private bool isAlive = true;
+	private bool isStanding = true;
+	private int walkTimer;
+	private Vector3 walkDirection;
+
 
 	void Awake ()
 	{
@@ -39,28 +43,33 @@ public class EnemyMovement : MonoBehaviour
 			transform.position += -1 * gameObject.transform.forward*moveSpeed*Time.deltaTime;
 			gameObject.transform.LookAt(player);
 			mostFear = 0.0f;
+			isStanding = true;
 		}
 		else if(DistFromPlayer() <= chaseDistance)
 		{
 			lookAt(player);
 			transform.position += transform.forward*moveSpeed*Time.deltaTime;
-			//print (mostFear);
+			isStanding = true;
 		}
 		// Otherwise...
 		else
 		{
+			if (isStanding)
+			{
+				randomWalk();
+			}
+			else 
+			{
+				gameObject.transform.LookAt(walkDirection);
+			}
+			transform.position += transform.forward*moveSpeed*Time.deltaTime;
+			walkTimer--;
+			if (walkTimer <= 0)
+			{
+				isStanding = true;
+			}
 			lookAt(player);
-//			Vector2 Temp = Random.insideUnitCircle;
-//			float TempDistance = Random.Range(0, 10);
-//			Temp = Temp * TempDistance;
-//			Vector3 MovePos = new Vector3(Temp.x, 0, Temp.y);
-//			//Vector3 MovePos = transform.position + FinalTemp;
-//			transform.LookAt(MovePos);
-//			transform.Translate (MovePos*moveSpeed*Time.deltaTime);
-//			transform.LookAt(player);
 		}
-		//anchors character to Y position.
-		//transform.position = new Vector3 (transform.position.x, yHeight, transform.position.z);
 	}
 	void OnTriggerStay (Collider other)
 	{
@@ -81,7 +90,7 @@ public class EnemyMovement : MonoBehaviour
 		if(fear > mostFear)
 		{
 			mostFear = fear;
-				mostFeared = light;
+			mostFeared = light;
 		}
 		return;
 	}
@@ -91,7 +100,7 @@ public class EnemyMovement : MonoBehaviour
 	}
 	void attackPlayer()
 	{
-		anim = GetComponent <Animator> ();
+		Animator anim = GetComponent <Animator> ();
 		anim.SetTrigger ("Dead");
 		threatDistance = 100.0f;
 		isAlive = false;
@@ -101,6 +110,16 @@ public class EnemyMovement : MonoBehaviour
 		Vector3 otherPos = other.position;
 		otherPos.y = yHeight;
 		gameObject.transform.LookAt(otherPos);
+	}
+	void randomWalk()
+	{
+		Vector3 Temp = Random.insideUnitSphere;
+		float TempDistance = Random.Range(0, 10);
+		walkDirection = transform.position - (Temp * TempDistance);
+		walkDirection.y = yHeight;
+		gameObject.transform.LookAt(walkDirection);
+		isStanding = false;
+		walkTimer = Mathf.RoundToInt(TempDistance)*walkMultiplier;
 	}
 }
 
