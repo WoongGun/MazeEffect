@@ -7,7 +7,7 @@ public class MazeDriver : MonoBehaviour {
 
 	public int boardWidth = 100;
 	public int boardHeight = 100;
-	public int iterations = 5;
+	public int iterations = 1;
 	public int [,] blocks;
 	public Material mat;
 
@@ -21,18 +21,19 @@ public class MazeDriver : MonoBehaviour {
 		printBlocks();
 
 		MazeContainer mainContainer = new MazeContainer(0,0, boardWidth, boardHeight);
-		tree = new BinaryTree(mainContainer);
+
+		tree = new BinaryTree(mainContainer.split(mainContainer, iterations));
 		tree.getLeaves(tree);
 
 		rooms = new List<Room>();
-
-		Debug.Log("Drawing Rooms");
+		Debug.Log("Drawing " + rooms.Count + " Rooms");
 
 		foreach (MazeContainer mc in tree.getAllNodes()){
 			Room newRoom = new Room(mc);
 			rooms.Add(newRoom);
 			newRoom.drawRoom(ref blocks);
 		}
+		Debug.Log("Drawing " + rooms.Count + " Rooms");
 		printBlocks();
 	}
 

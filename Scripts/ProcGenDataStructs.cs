@@ -39,7 +39,6 @@ public class MazeContainer {
 	private int y;
 	private int w;
 	private int h;
-//	private Vector2 centre;
 
 	private float W_RATIO = .3f;
 	private float H_RATIO = .3f;
@@ -51,14 +50,14 @@ public class MazeContainer {
 		this.y = y;
 		this.h = h;
 		this.w = w;
-//		this.centre = new Vector2(this.x + this.w/2, 
-//		                      this.y + this.h/2);
 	}
 	
 	public MazeContainer split(MazeContainer toSplit, int iter){
+		Debug.Log("Entering Split");
 		BinaryTree root = new BinaryTree(toSplit);
 
 		while (iter != 0){
+			Debug.Log("Splitting!");
 			MazeContainer [] containers = randomSplit(toSplit);
 			root.setLeft(new BinaryTree(split(containers[0], iter-1)));
 			root.setRight(new BinaryTree(split(containers[1], iter-1)));
