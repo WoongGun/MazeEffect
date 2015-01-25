@@ -49,6 +49,7 @@
      <Compile Include="Assets\EndGame.cs" />
      <Compile Include="Assets\EnemyMovement.cs" />
      <Compile Include="Assets\FPSWalkerEnhanced.cs" />
+     <Compile Include="Assets\GameManager.cs" />
      <Compile Include="Assets\MenuScript.cs" />
      <Compile Include="Assets\MobileInput\Scripts\CrossPlatformInputManager.cs" />
      <Compile Include="Assets\MobileInput\Scripts\Joystick.cs" />

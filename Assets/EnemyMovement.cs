@@ -31,6 +31,8 @@ public class EnemyMovement : MonoBehaviour
 
 	private Animator anim;
 
+	public AudioClip killSound;
+
 	void Awake ()
 	{
 		// Set up the references.
@@ -67,6 +69,7 @@ public class EnemyMovement : MonoBehaviour
 				attackPlayer();
 				
 				killOwner = true;
+				audio.Play();
 				BroadcastMessage("CharacterKill", this.transform);
 			}
 			
