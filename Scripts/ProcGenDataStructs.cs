@@ -20,6 +20,18 @@ public class Room {
 		height -= Random.Range(0, height/3);
 	}
 
+	// Draws the given room into a bitmap
+	public void drawRoom(out Texture2D bmp){
+		if (x + width > bmp.width || y + height > bmp.height){
+			Debug.Log("Something went wrong with your room drawing");
+		} else {
+			for (int i = 0; i <= width; i++){
+				for (int j = 0; j <= height; j++){
+					bmp.SetPixel(x + i, y + j, Color.black);
+				}
+			}
+		}
+	}
 }
 
 public class MazeContainer {
