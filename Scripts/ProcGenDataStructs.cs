@@ -34,15 +34,23 @@ public class Room {
 	}
 }
 
+
+// from http://gamedevelopment.tutsplus.com/tutorials/how-to-use-bsp-trees-to-generate-game-maps--gamedev-12268
 public class MazeContainer {
+	private int minSpan = 3;
+
 	private int x;
 	private int y;
 	private int w;
 	private int h;
 
-	private float W_RATIO = .3f;
-	private float H_RATIO = .3f;
-	private bool ENFORCE_RATIO = true;
+//	private float W_RATIO = .3f;
+//	private float H_RATIO = .3f;
+//	private bool ENFORCE_RATIO = true;
+
+	private MazeContainer leftChild = null; 
+	private MazeContainer rightChild = null;
+	private Vector4 room;
 
 
 	public MazeContainer(int x, int y, int w, int h){
@@ -52,18 +60,47 @@ public class MazeContainer {
 		this.w = w;
 	}
 	
-	public MazeContainer split(MazeContainer toSplit, int iter){
-		Debug.Log("Entering Split");
-		BinaryTree root = new BinaryTree(toSplit);
+	public bool split(){
+		if (leftChild != null || rightChild != null){
+			return false;
+		} else {
+			bool splitH = Random.Range(0.0f,1.0f) > .5f;
+			if (w > h && h / w >= 0.05){
+				splitH = false;
+			} else if (h > w && w / h >= 0.05){
+				splitH = true;
+			}
+			int max = (splitH ? h : w) - minSpan;
 
-		while (iter != 0){
-			Debug.Log("Splitting!");
-			MazeContainer [] containers = randomSplit(toSplit);
-			root.setLeft(new BinaryTree(split(containers[0], iter-1)));
-			root.setRight(new BinaryTree(split(containers[1], iter-1)));
+			if (max < minSpan)
+				return false;
+
+			int splitAt = Random.Range(minSpan, max);
+
+			if (splitH) {
+				leftChild = new MazeContainer(x, y, w, splitAt);
+				rightChild = new MazeContainer(x, y + splitAt, w, h - splitAt);
+			} else {
+				leftChild = new MazeContainer(x, y, splitAt, h);
+				rightChild = new MazeContainer(x + splitAt, y, w - splitAt, h);
+			}
+			return true;
 		}
-		return root.getNode();
 	}
+
+
+	//	public MazeContainer split(MazeContainer toSplit, int iter){
+//		Debug.Log("Entering Split");
+//		BinaryTree root = new BinaryTree(toSplit);
+//
+//		while (iter != 0){
+//			Debug.Log("Splitting!");
+//			MazeContainer [] containers = randomSplit(toSplit);
+//			root.setLeft(new BinaryTree(split(containers[0], iter-1)));
+//			root.setRight(new BinaryTree(split(containers[1], iter-1)));
+//		}
+//		return root.getNode();
+//	}
 
 	public int getX (){
 		return x;
@@ -77,48 +114,71 @@ public class MazeContainer {
 	public int getH (){
 		return h;
 	}
-
-	public MazeContainer [] randomSplit(MazeContainer cont){
-		MazeContainer r1, r2;
-		int splitDir = Random.Range(0, 1);
-
-		if (splitDir == 0){
-			// Vertical split
-			r1 = new MazeContainer(cont.x, 
-			                   cont.y, 
-			                   Random.Range(1, cont.w),
-			                   cont.h);
-			r2 = new MazeContainer(cont.x + r1.w,
-			                   cont.y,
-			                   cont.w - r1.w,
-			                   cont.h);
-			if (ENFORCE_RATIO){
-				float r1_rat = r1.w/r1.h;
-				float r2_rat = r2.w/r2.h;
-				if (r1_rat < W_RATIO || r2_rat < W_RATIO)
-					return randomSplit(cont);
-			}
-		} else {
-			// Horizontal split
-			r1 = new MazeContainer(cont.x, 
-			                   cont.y, 
-			                   cont.w,
-			                   Random.Range(1, cont.h));
-			r2 = new MazeContainer(cont.x + r1.w,
-			                   cont.y,
-			                   cont.w,
-			                   cont.h - r1.h);
-			if (ENFORCE_RATIO){
-				float r1_rat = r1.h/r1.w;
-				float r2_rat = r2.h/r2.w;
-				if (r1_rat < H_RATIO || r2_rat < H_RATIO)
-					return randomSplit(cont);
-			}
-		}
-		MazeContainer [] ret = {r1, r2};
-		return ret;
+	public MazeContainer getLeft(){
+		return leftChild;
+	}
+	public MazeContainer getRight(){
+		return rightChild;
+	}
+	public Vector4 getRoom(){
+		return room;
 	}
 
+//	public MazeContainer [] randomSplit(MazeContainer cont){
+//		MazeContainer r1, r2;
+//		int splitDir = Random.Range(0, 1);
+//
+//		if (splitDir == 0){
+//			// Vertical split
+//			r1 = new MazeContainer(cont.x, 
+//			                   cont.y, 
+//			                   Random.Range(1, cont.w),
+//			                   cont.h);
+//			r2 = new MazeContainer(cont.x + r1.w,
+//			                   cont.y,
+//			                   cont.w - r1.w,
+//			                   cont.h);
+//			if (ENFORCE_RATIO){
+//				float r1_rat = r1.w/r1.h;
+//				float r2_rat = r2.w/r2.h;
+//				if (r1_rat < W_RATIO || r2_rat < W_RATIO)
+//					return randomSplit(cont);
+//			}
+//		} else {
+//			// Horizontal split
+//			r1 = new MazeContainer(cont.x, 
+//			                   cont.y, 
+//			                   cont.w,
+//			                   Random.Range(1, cont.h));
+//			r2 = new MazeContainer(cont.x + r1.w,
+//			                   cont.y,
+//			                   cont.w,
+//			                   cont.h - r1.h);
+//			if (ENFORCE_RATIO){
+//				float r1_rat = r1.h/r1.w;
+//				float r2_rat = r2.h/r2.w;
+//				if (r1_rat < H_RATIO || r2_rat < H_RATIO)
+//					return randomSplit(cont);
+//			}
+//		}
+//		MazeContainer [] ret = {r1, r2};
+//		return ret;
+//	}
+	public void createRooms(){
+		if (leftChild != null || rightChild != null){
+			if (leftChild != null)
+				leftChild.createRooms();
+			if (rightChild != null)
+				rightChild.createRooms();
+		} else {
+			int roomX, roomY, roomW, roomH;
+			roomW = Random.Range(3, w - 2);
+			roomH = Random.Range(3, h - 2);
+			roomX = Random.Range(1, w - roomW - 1);
+			roomY = Random.Range(1, h - roomH - 1);
+			room = new Vector4(roomX, roomY, roomW, roomH);
+		}
+	}
 }
 
 public class BinaryTree {
