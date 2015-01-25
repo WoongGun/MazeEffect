@@ -23,14 +23,17 @@ public class EnemyMovement : MonoBehaviour
 	private bool isAlive = true;
 	private bool isStanding = true;
 	private int walkTimer;
+	private int waitTimer;
 	private Vector3 walkDirection;
+	private int fleeing;
 
+	private Animator anim;
 
 	void Awake ()
 	{
 		// Set up the references.
 		player = GameObject.FindGameObjectWithTag ("Player").transform;
-		
+		anim = GetComponent <Animator> ();
 		killCam = GameObject.Find("KillCam").camera.transform;
 	}
 	void Update ()
@@ -50,6 +53,7 @@ public class EnemyMovement : MonoBehaviour
 
 		else if (DistFromPlayer() < threatDistance)
 		{
+			anim.Play ("Move");
 			if (isAlive)
 			{
 				isAlive = false;
@@ -62,13 +66,18 @@ public class EnemyMovement : MonoBehaviour
 			transform.position += transform.forward*attackSpeed*Time.deltaTime;
 		}
 
-		else if (mostFear >= playerAttraction) 
+		else if (mostFear >= playerAttraction || fleeing > 0) 
 		{
 			lookAt(mostFeared.transform);
-			transform.position += -1 * gameObject.transform.forward*moveSpeed*Time.deltaTime;
+			transform.position += -1 * gameObject.transform.forward*moveSpeed/2*Time.deltaTime;
 			gameObject.transform.LookAt(player);
 			mostFear = 0.0f;
 			isStanding = true;
+			if  (fleeing == 0)
+			{
+				fleeing = UnityEngine.Random.Range(1, 100);
+			}
+			fleeing--;
 		}
 
 		else if(DistFromPlayer() <= chaseDistance)
@@ -80,21 +89,29 @@ public class EnemyMovement : MonoBehaviour
 		// Otherwise...
 		else
 		{
-			if (isStanding)
-			{
-				randomWalk();
-			}
-			else 
-			{
-				gameObject.transform.LookAt(walkDirection);
-			}
-			transform.position += transform.forward*moveSpeed*Time.deltaTime;
-			walkTimer--;
-			if (walkTimer <= 0)
-			{
-				isStanding = true;
-			}
-			lookAt(player);
+			anim.Play ("Idle");
+//			if (isStanding)
+//			{
+//				waitTimer--;
+//				if (waitTimer <= 0)
+//				{
+//					randomWalk();
+//				}
+//			}
+//			else 
+//			{
+//				gameObject.transform.LookAt(walkDirection);
+//				
+//				transform.position += transform.forward*moveSpeed*Time.deltaTime;
+//				walkTimer--;
+//				if (walkTimer <= 0)
+//				{
+//					isStanding = true;
+//					waitTimer = UnityEngine.Random.Range(1, 5);
+//					anim.Play ("Idle");
+//				}
+//			}
+			//lookAt(player);
 		}
 	}
 	void OnTriggerStay (Collider other)
@@ -126,7 +143,6 @@ public class EnemyMovement : MonoBehaviour
 	}
 	void attackPlayer()
 	{
-		Animator anim = GetComponent <Animator> ();
 		anim.SetTrigger ("Dead");
 		threatDistance = 100.0f;
 	}
@@ -147,8 +163,8 @@ public class EnemyMovement : MonoBehaviour
 
 	void randomWalk()
 	{
-		Vector3 Temp = Random.insideUnitSphere;
-		float TempDistance = Random.Range(0, 10);
+		Vector3 Temp = UnityEngine.Random.insideUnitSphere;
+		float TempDistance = UnityEngine.Random.Range(0, 10);
 		walkDirection = transform.position - (Temp * TempDistance);
 		walkDirection.y = yHeight;
 		gameObject.transform.LookAt(walkDirection);
