@@ -26,6 +26,8 @@ public class EnemyMovement : MonoBehaviour
 	private int waitTimer;
 	private Vector3 walkDirection;
 	private int fleeing;
+	private bool stopPursue;
+	private bool killOwner;
 
 	private Animator anim;
 
@@ -38,8 +40,13 @@ public class EnemyMovement : MonoBehaviour
 	}
 	void Update ()
 	{
-		
-		playerLookAt(killCam);
+
+		if (stopPursue == true) 
+		{
+			return;
+		}
+
+		//playerLookAt(killCam);
 
 		if(DistFromPlayer() < killDistance)
 		{
@@ -59,9 +66,11 @@ public class EnemyMovement : MonoBehaviour
 				isAlive = false;
 				attackPlayer();
 				
-				BroadcastMessage("CharacterDeath", this.transform);
+				killOwner = true;
+				BroadcastMessage("CharacterKill", this.transform);
 			}
-
+			
+			playerLookAt(killCam);
 			lookAt(player);
 			transform.position += transform.forward*attackSpeed*Time.deltaTime;
 		}
@@ -156,7 +165,7 @@ public class EnemyMovement : MonoBehaviour
 
 	void playerLookAt(Transform killCam)
 	{
-		Vector3 killerPos = transform.position;
+		Vector3 killerPos = this.transform.position;
 		killerPos.y = yHeight + 1;
 		killCam.transform.LookAt(killerPos);
 	}
@@ -171,5 +180,14 @@ public class EnemyMovement : MonoBehaviour
 		isStanding = false;
 		walkTimer = Mathf.RoundToInt(TempDistance)*walkMultiplier;
 	}
+
+	void CharacterKill()
+	{
+		if (killOwner == false) 
+		{
+			stopPursue = true;
+		}
+	}
+
 }
 
