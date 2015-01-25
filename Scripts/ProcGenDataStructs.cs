@@ -2,37 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Room {
-
-	private int width;
-	private int height;
-	private int x;
-	private int y;
-
-	public int minSpan = 3;
-
-	public Room (MazeContainer cont){
-		x = cont.getX() + Random.Range(minSpan, cont.getW() / 3);
-		y = cont.getY() + Random.Range(minSpan, cont.getH() / 3);
-		width = cont.getW() - (x - cont.getX());
-		height = cont.getH() - (y - cont.getY());
-		width -= Random.Range(0, width/3);
-		height -= Random.Range(0, height/3);
-	}
-
-	// Draws the given room into a bitmap
-	public void drawRoom(ref int[,] bmp){
-		if (x + width > bmp.GetLength(0) || y + height > bmp.GetLength(1)){
-			Debug.Log("Something went wrong with your room drawing");
-		} else {
-			for (int i = 0; i < width; i++){
-				for (int j = 0; j < height; j++){
-					bmp [x + i,y + j] = 1;
-				}
-			}
-		}
-	}
-}
+//public class Room {
+//
+//	private int width;
+//	private int height;
+//	private int x;
+//	private int y;
+//
+//	public int minSpan = 3;
+//
+//	public Room (MazeContainer cont){
+//		x = cont.getX() + Random.Range(minSpan, cont.getW() / 3);
+//		y = cont.getY() + Random.Range(minSpan, cont.getH() / 3);
+//		width = cont.getW() - (x - cont.getX());
+//		height = cont.getH() - (y - cont.getY());
+//		width -= Random.Range(0, width/3);
+//		height -= Random.Range(0, height/3);
+//	}
+//
+//	// Draws the given room into a bitmap
+//	public void drawRoom(ref int[,] bmp){
+//		if (x + width > bmp.GetLength(0) || y + height > bmp.GetLength(1)){
+//			Debug.Log("Something went wrong with your room drawing");
+//		} else {
+//			for (int i = 0; i < width; i++){
+//				for (int j = 0; j < height; j++){
+//					bmp [x + i,y + j] = 1;
+//				}
+//			}
+//		}
+//	}
+//}
 
 
 // from http://gamedevelopment.tutsplus.com/tutorials/how-to-use-bsp-trees-to-generate-game-maps--gamedev-12268
@@ -124,46 +124,46 @@ public class MazeContainer {
 	}
 }
 
-public class BinaryTree {
-	
-	private MazeContainer node = null;
-	private BinaryTree left = null;
-	private BinaryTree right = null;
-
-	private List<MazeContainer> allNodes = new List<MazeContainer>();
-
-	public BinaryTree (MazeContainer node){
-		this.node = node;
-	}
-
-	public void getLeaves(BinaryTree root){
-		if (root.getLeft() == null && root.getRight() == null){
-			allNodes.Add(root.getNode());
-		} else {
-			getLeaves(root.left);
-			getLeaves(root.right);
-		}
-	}
-
-	public List<MazeContainer> getAllNodes(){
-		return allNodes;
-	}
-	
-	public MazeContainer getNode(){
-		return node;
-	}
-	public BinaryTree getLeft(){
-		return left;
-	}
-	public BinaryTree getRight(){
-		return right;
-	}
-	public void setLeft (BinaryTree left){
-		this.left = left;
-	}
-	public void setRight (BinaryTree right){
-		this.right = right;
-	}
-
-} 
+//public class BinaryTree {
+//	
+//	private MazeContainer node = null;
+//	private BinaryTree left = null;
+//	private BinaryTree right = null;
+//
+//	private List<MazeContainer> allNodes = new List<MazeContainer>();
+//
+//	public BinaryTree (MazeContainer node){
+//		this.node = node;
+//	}
+//
+//	public void getLeaves(BinaryTree root){
+//		if (root.getLeft() == null && root.getRight() == null){
+//			allNodes.Add(root.getNode());
+//		} else {
+//			getLeaves(root.left);
+//			getLeaves(root.right);
+//		}
+//	}
+//
+//	public List<MazeContainer> getAllNodes(){
+//		return allNodes;
+//	}
+//	
+//	public MazeContainer getNode(){
+//		return node;
+//	}
+//	public BinaryTree getLeft(){
+//		return left;
+//	}
+//	public BinaryTree getRight(){
+//		return right;
+//	}
+//	public void setLeft (BinaryTree left){
+//		this.left = left;
+//	}
+//	public void setRight (BinaryTree right){
+//		this.right = right;
+//	}
+//
+//} 
 

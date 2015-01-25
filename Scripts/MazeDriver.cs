@@ -11,7 +11,7 @@ public class MazeDriver : MonoBehaviour {
 	public int [,] blocks;
 	public Material mat;
 
-	private BinaryTree tree;
+//	private BinaryTree tree;
 	private List<MazeContainer> containers = new List<MazeContainer>();
 
 
@@ -21,22 +21,9 @@ public class MazeDriver : MonoBehaviour {
 		printBlocks();
 		splitContainers();
 		containers[0].createRooms();
-		Debug.Log("Creating " + containers.Count + " rooms");
+//		Debug.Log("Creating " + containers.Count + " rooms");
 		drawRooms();
 		printBlocks();
-//		tree = new BinaryTree(mainContainer.split(mainContainer, iterations));
-//		tree.getLeaves(tree);
-//
-//		rooms = new List<Room>();
-//		Debug.Log("Drawing " + rooms.Count + " Rooms");
-//
-//		foreach (MazeContainer mc in tree.getAllNodes()){
-//			Room newRoom = new Room(mc);
-//			rooms.Add(newRoom);
-//			newRoom.drawRoom(ref blocks);
-//		}
-//		Debug.Log("Drawing " + rooms.Count + " Rooms");
-//		printBlocks();
 	}
 	
 	void splitContainers(){
@@ -50,7 +37,8 @@ public class MazeDriver : MonoBehaviour {
 			pushSuccess = false;
 			
 			for (int i = 0; i < containers.Count; i++){
-				//MazeContainer mc in containers) {
+//				Debug.Log("Containers: " + containers.Count);
+				Debug.Log(containers[i]);
 				if (containers[i].getRight() == null && containers[i].getLeft() == null){
 					if (containers[i].getW() > maxContainerSize || containers[i].getH() > maxContainerSize
 					    || Random.Range(0.0f, 1.0f) > .25f){
@@ -61,7 +49,6 @@ public class MazeDriver : MonoBehaviour {
 						}
 					}
 				}
-				
 			}
 		}
 	}
@@ -83,6 +70,7 @@ public class MazeDriver : MonoBehaviour {
 			s += "\n";
 		}
 		print(s);
+		printToFile(s);
 	}
 
 	void drawRooms(){
@@ -90,11 +78,16 @@ public class MazeDriver : MonoBehaviour {
 			// room info is in a vector4 because I'm an asshole
 			// Room:	x, y, w, h
 			// Vector: 	w, x, y, z
+//			Debug.Log(r.getRoom());
 			for (int i = 0; i < r.getRoom().y; i++){
 				for (int j = 0; j < r.getRoom().z; j++){
 					blocks[i + (int) r.getRoom().w,j + (int) r.getRoom().x] = 1;
 				}
 			}
 		}
+	}
+
+	void printToFile(string text){
+		System.IO.File.WriteAllText(@"E:\Google Drive\Workspaces\GGJ 2015\Assets\Scripts\writefile.txt", text);
 	}
 }
