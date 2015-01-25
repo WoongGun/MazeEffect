@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\EndGame.cs" />
      <Compile Include="Assets\EnemyMovement.cs" />
      <Compile Include="Assets\FPSWalkerEnhanced.cs" />
      <Compile Include="Assets\MenuScript.cs" />
