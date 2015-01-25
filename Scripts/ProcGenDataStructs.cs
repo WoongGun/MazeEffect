@@ -44,10 +44,6 @@ public class MazeContainer {
 	private int w;
 	private int h;
 
-//	private float W_RATIO = .3f;
-//	private float H_RATIO = .3f;
-//	private bool ENFORCE_RATIO = true;
-
 	private MazeContainer leftChild = null; 
 	private MazeContainer rightChild = null;
 	private Vector4 room;
@@ -89,19 +85,6 @@ public class MazeContainer {
 	}
 
 
-	//	public MazeContainer split(MazeContainer toSplit, int iter){
-//		Debug.Log("Entering Split");
-//		BinaryTree root = new BinaryTree(toSplit);
-//
-//		while (iter != 0){
-//			Debug.Log("Splitting!");
-//			MazeContainer [] containers = randomSplit(toSplit);
-//			root.setLeft(new BinaryTree(split(containers[0], iter-1)));
-//			root.setRight(new BinaryTree(split(containers[1], iter-1)));
-//		}
-//		return root.getNode();
-//	}
-
 	public int getX (){
 		return x;
 	}
@@ -123,47 +106,7 @@ public class MazeContainer {
 	public Vector4 getRoom(){
 		return room;
 	}
-
-//	public MazeContainer [] randomSplit(MazeContainer cont){
-//		MazeContainer r1, r2;
-//		int splitDir = Random.Range(0, 1);
-//
-//		if (splitDir == 0){
-//			// Vertical split
-//			r1 = new MazeContainer(cont.x, 
-//			                   cont.y, 
-//			                   Random.Range(1, cont.w),
-//			                   cont.h);
-//			r2 = new MazeContainer(cont.x + r1.w,
-//			                   cont.y,
-//			                   cont.w - r1.w,
-//			                   cont.h);
-//			if (ENFORCE_RATIO){
-//				float r1_rat = r1.w/r1.h;
-//				float r2_rat = r2.w/r2.h;
-//				if (r1_rat < W_RATIO || r2_rat < W_RATIO)
-//					return randomSplit(cont);
-//			}
-//		} else {
-//			// Horizontal split
-//			r1 = new MazeContainer(cont.x, 
-//			                   cont.y, 
-//			                   cont.w,
-//			                   Random.Range(1, cont.h));
-//			r2 = new MazeContainer(cont.x + r1.w,
-//			                   cont.y,
-//			                   cont.w,
-//			                   cont.h - r1.h);
-//			if (ENFORCE_RATIO){
-//				float r1_rat = r1.h/r1.w;
-//				float r2_rat = r2.h/r2.w;
-//				if (r1_rat < H_RATIO || r2_rat < H_RATIO)
-//					return randomSplit(cont);
-//			}
-//		}
-//		MazeContainer [] ret = {r1, r2};
-//		return ret;
-//	}
+	
 	public void createRooms(){
 		if (leftChild != null || rightChild != null){
 			if (leftChild != null)
@@ -221,14 +164,6 @@ public class BinaryTree {
 	public void setRight (BinaryTree right){
 		this.right = right;
 	}
-	
-//	public int getHeight (BinaryTree tree){
-//		// return height of tree
-//		int maxH;
-//		if (left != null){
-//			 left.getHeight();
-//		}
-//		return 0;
-//	}
+
 } 
 
