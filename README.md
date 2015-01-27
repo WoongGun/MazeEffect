@@ -13,12 +13,7 @@ Maze effect is a 3d first person dungeon crawler.  Waking up in the pitch dark, 
 
 
 Game By:
-
-Chris Dileo
-Daniel Amaya
-James Choi
-Laura Tammpere
-
+Chris Dileo, Daniel Amaya, James Choi, Laura Tammpere
 
 Audio:
 Andrew Bowers
