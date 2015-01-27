@@ -17,3 +17,5 @@ Chris Dileo, Daniel Amaya, James Choi, Laura Tammpere
 
 Audio:
 Andrew Bowers
+
+http://globalgamejam.org/2015/games/maze-effect
