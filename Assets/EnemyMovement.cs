@@ -14,30 +14,33 @@ public class EnemyMovement : MonoBehaviour
 	public float threatDistance; 
 	public float attackSpeed;
 	public int walkMultiplier;
-
-	private Transform killCam;
-	private Transform player;               // Reference to the player's position.
-	private float mostFear = 0.0f;
-	private Collider mostFeared;  
+	public float rotationSpeed;
+	public float fearMultiplier;
+	public AudioClip killSound;
 	public bool gameOver = false;
-	private bool isAlive = true;
-	private bool isStanding = true;
-	private int walkTimer;
-	private int waitTimer;
-	private Vector3 walkDirection;
-	private int fleeing;
-	private bool stopPursue;
-	private bool killOwner;
 
 	private Animator anim;
+	private Transform player;               // Reference to the player's position.
+	private Collider mostFeared;  
+	private float mostFear = 0.0f;
+	private Vector3 walkDirection;
+	private int walkTimer;
+	private bool isStanding = true;
+//	private int waitTimer;
+	//private int fleeing;
+	private bool isAlive = true;
+	private bool stopPursue;
+	private bool killOwner;
+	private Transform killCam;
 
-	public AudioClip killSound;
+//	private RaycastHit testHit;
 
 	void Awake ()
 	{
 		// Set up the references.
 		player = GameObject.FindGameObjectWithTag ("Player").transform;
 		anim = GetComponent <Animator> ();
+		anim.Play ("Idle");
 		killCam = GameObject.Find("KillCam").camera.transform;
 	}
 	void Update ()
@@ -47,8 +50,6 @@ public class EnemyMovement : MonoBehaviour
 		{
 			return;
 		}
-
-		//playerLookAt(killCam);
 
 		if(DistFromPlayer() < killDistance)
 		{
@@ -62,70 +63,71 @@ public class EnemyMovement : MonoBehaviour
 
 		else if (DistFromPlayer() < threatDistance)
 		{
-			anim.Play ("Move");
-			if (isAlive)
+			if (RaycastToOther(player.position, "Player") == true)
 			{
-				isAlive = false;
-				attackPlayer();
-				
-				killOwner = true;
-				audio.Play();
-				BroadcastMessage("CharacterKill", this.transform);
+				anim.Play ("Move");
+				if (isAlive)
+				{
+					isAlive = false;
+					attackPlayer();
+
+					killOwner = true;
+					audio.Play();
+					BroadcastMessage("CharacterKill", this.transform);
+				}			
+				playerLookAt(killCam);
+				gameObject.transform.LookAt(player);
+				transform.position += transform.forward*attackSpeed*Time.deltaTime;
 			}
-			
-			playerLookAt(killCam);
-			lookAt(player);
-			transform.position += transform.forward*attackSpeed*Time.deltaTime;
+			//Debug.DrawLine(transform.position, testHit.point);
 		}
 
-		else if (mostFear >= playerAttraction || fleeing > 0) 
+		else if (mostFear >= playerAttraction) //|| fleeing > 0) 
 		{
-			lookAt(mostFeared.transform);
+			lookAt(mostFeared.transform.position);
 			transform.position += -1 * gameObject.transform.forward*moveSpeed/2*Time.deltaTime;
-			gameObject.transform.LookAt(player);
+			transform.position = new Vector3(transform.position.x, yHeight, transform.position.z);
 			mostFear = 0.0f;
 			isStanding = true;
-			if  (fleeing == 0)
-			{
-				fleeing = UnityEngine.Random.Range(1, 100);
-			}
-			fleeing--;
+//			if  (fleeing <= 0)
+//			{
+//				fleeing = UnityEngine.Random.Range(1, 100);
+//			}
+//			fleeing--;
 		}
 
 		else if(DistFromPlayer() <= chaseDistance)
 		{
-			lookAt(player);
+			lookAt(player.position);
 			transform.position += transform.forward*moveSpeed*Time.deltaTime;
+			transform.position = new Vector3(transform.position.x, yHeight, transform.position.z);
 			isStanding = true;
 		}
-		// Otherwise...
 		else
 		{
-			anim.Play ("Idle");
-//			if (isStanding)
-//			{
-//				waitTimer--;
-//				if (waitTimer <= 0)
-//				{
-//					randomWalk();
-//				}
-//			}
-//			else 
-//			{
-//				gameObject.transform.LookAt(walkDirection);
-//				
-//				transform.position += transform.forward*moveSpeed*Time.deltaTime;
-//				walkTimer--;
-//				if (walkTimer <= 0)
-//				{
-//					isStanding = true;
-//					waitTimer = UnityEngine.Random.Range(1, 5);
-//					anim.Play ("Idle");
-//				}
-//			}
-			//lookAt(player);
+			//Idle state
+			if (isStanding)
+			{
+				randomWalk();
+			}
+			else 
+			{
+				lookAt(walkDirection);
+				transform.position += transform.forward*moveSpeed*Time.deltaTime;
+				transform.position = new Vector3(transform.position.x, yHeight, transform.position.z);
+				walkTimer--;
+				if (walkTimer <= 0)
+				{
+					isStanding = true;				
+				}
+			}
 		}
 	}
+//	void OnDrawGizmosSelected() {
+//		Gizmos.color = Color.yellow;
+//		Gizmos.DrawSphere(walkDirection, 1);
+//	}
+
 	void OnTriggerStay (Collider other)
 	{
 		if (other.tag != "Lighting")
@@ -133,57 +135,79 @@ public class EnemyMovement : MonoBehaviour
 			return;
 		}
 		GetFear (other);
+	
 	}
+
 	void GetFear(Collider light)
 	{
+
 		float distance = Vector3.Distance (gameObject.transform.position, light.transform.position);
-		if (Physics.Raycast (gameObject.collider.transform.position, light.transform.position) != true)
+		if (RaycastToOther (light.transform.position, "Lighting") == true)
 		{
-			return;
-		} 
-		float fear = light.light.intensity *(light.light.range / distance);
-		if(fear > mostFear)
-		{
-			mostFear = fear;
-			mostFeared = light;
+			float fear = light.light.intensity * (light.light.range / distance) * fearMultiplier;
+			if (fear > mostFear) 
+			{
+				mostFear = fear;
+				mostFeared = light;
+			}
 		}
 		return;
+	
 	}
+
 	float DistFromPlayer()
 	{
 		return Vector3.Distance (gameObject.transform.position, player.position);
 	}
-	void attackPlayer()
-	{
-		anim.SetTrigger ("Dead");
-		threatDistance = 100.0f;
-	}
 
-	void lookAt(Transform other)
+	void lookAt(Vector3 other)
+	//smooothly rotates gameObject
 	{
-		Vector3 otherPos = other.position;
-		otherPos.y = yHeight;
-		gameObject.transform.LookAt(otherPos);
-	}
-
-	void playerLookAt(Transform killCam)
-	{
-		Vector3 killerPos = this.transform.position;
-		killerPos.y = yHeight + 1;
-		killCam.transform.LookAt(killerPos);
+		Vector3 otherPos = other - transform.position;
+		otherPos.y = 0.0f;
+		Quaternion lookRotation = Quaternion.LookRotation(otherPos);
+		transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
+//		Debug.DrawLine(gameObject.collider.transform.position, other);
 	}
 
 	void randomWalk()
+	//sets a new Destination in vicinty of GameObject
 	{
 		Vector3 Temp = UnityEngine.Random.insideUnitSphere;
 		float TempDistance = UnityEngine.Random.Range(0, 10);
 		walkDirection = transform.position - (Temp * TempDistance);
 		walkDirection.y = yHeight;
-		gameObject.transform.LookAt(walkDirection);
 		isStanding = false;
 		walkTimer = Mathf.RoundToInt(TempDistance)*walkMultiplier;
 	}
+	
+	bool RaycastToOther(Vector3 otherPos, string tag)
+	//returns to if Raycast hits target and target is the right tag
+	{
+		float distance = Vector3.Distance (transform.position, otherPos);
+		Vector3 direction = otherPos - gameObject.collider.transform.position;
+		bool result = false;
+		RaycastHit testHit;
 
+		// Does the ray intersect the target?
+		if (Physics.Raycast (gameObject.collider.transform.position, direction, out testHit, distance)) 
+		{
+//			print (testHit.collider.tag);
+			if(testHit.collider.tag == tag)
+			{
+				result = true;
+			}
+//			Debug.DrawLine(gameObject.collider.transform.position, testHit.point);
+		}
+//		print (result);
+		return result;
+	}
+
+	void attackPlayer()
+	{
+		anim.SetTrigger ("Dead");
+		threatDistance = threatDistance * 100.0f;
+	}
 	void CharacterKill()
 	{
 		if (killOwner == false) 
@@ -191,6 +215,11 @@ public class EnemyMovement : MonoBehaviour
 			stopPursue = true;
 		}
 	}
-
+	void playerLookAt(Transform killCam)
+	{
+		Vector3 killerPos = this.transform.position;
+		killerPos.y = yHeight + 1;
+		killCam.transform.LookAt(killerPos);
+	}
 }
 
