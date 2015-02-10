@@ -15,3 +15,12 @@
 
 #Unity3D Generated File On Crash Reports
 sysinfo.txt
+*.log
+*.dll
+*.mdb
+*.csproj
+*.csproj
+*.dll
+*.mdb
+*.cs~
+*.meta
